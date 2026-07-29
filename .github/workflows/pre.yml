@@ -1,7 +1,6 @@
-name: Code Formatting Check
+name: Pre-check
 on:
-  push:
-  pull_request:
+  workflow_call:
 jobs:
   format-and-fix:
     runs-on: ubuntu-24.04

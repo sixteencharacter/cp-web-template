@@ -1,0 +1,18 @@
+name: CI
+on: [push,pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pre-check:
+    uses: ./.github/workflows/pre.yml
+  # frontend-quality-gates:
+  #   needs:
+  #     - pre-check
+  #   uses: ./.github/workflows/frontend-quality-gate.yml
+  # tests:
+  #   needs:
+  #     - pre-check
+  #   uses: ./.github/workflows/frontend-tests.yml

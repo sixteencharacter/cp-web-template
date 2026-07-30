@@ -1,12 +1,52 @@
 # CP Web Application Starter Template
 
-This repository contains a simple full-stack starter with a Go Fiber backend and a Next.js frontend.
+This repository contains a full-stack starter with a Go Fiber backend and a Next.js frontend. The backend is structured around dependency-injected services and router-scoped endpoint packages.
 
-## Project structure
+## Repository structure
 
-- src/backend: Go API server
-- src/frontend: Next.js app
-- .github/workflows: CI workflow definitions
+```text
+.
+├── docker-compose.yml
+├── README.md
+├── src/
+│   ├── backend/
+│   │   ├── go.mod
+│   │   ├── main.go
+│   │   ├── main_test.go
+│   │   └── internal/
+│   │       ├── endpoints/
+│   │       │   ├── healthz/
+│   │       │   │   ├── endpoint.go
+│   │       │   │   └── router.go
+│   │       │   └── foobar/
+│   │       │       ├── endpoint.go
+│   │       │       └── router.go
+│   │       ├── router/
+│   │       │   ├── router.go
+│   │       │   └── router_test.go
+│   │       └── service/
+│   │           ├── service.go
+│   │           ├── service_mock.go
+│   │           └── service_test.go
+│   └── frontend/
+│       ├── app/
+│       ├── components/
+│       ├── package.json
+│       └── ...
+└── .github/workflows/
+    ├── ci.yml
+    ├── backend-quality-gate.yml
+    ├── backend-tests.yml
+    ├── frontend-quality-gate.yml
+    └── frontend-tests.yml
+```
+
+## Backend architecture
+
+- The endpoint handlers live in `src/backend/internal/endpoints/<router-name>/`.
+- Each router folder contains its own `endpoint.go` and `router.go` files.
+- The top-level router package wires those endpoint packages into the Fiber app.
+- The service layer is dependency-injected and composed in `src/backend/internal/service/service.go`.
 
 ## Prerequisites
 
@@ -32,7 +72,16 @@ Before running the project locally, install:
    ```
 4. Open http://localhost:3000 to verify the server is responding.
 
-> Note: the backend currently listens on port 3000. If you want to run the frontend at the same time, start the frontend on another port as shown below.
+Available backend routes:
+
+- `GET /healthz`
+- `GET /foo/bar`
+
+You can also run the test suite with:
+
+```bash
+go test ./...
+```
 
 ## Frontend setup
 
@@ -69,67 +118,18 @@ npm run dev -- --port 3001
 
 ## CI overview
 
-GitHub Actions is configured in .github/workflows/ci.yml. The current pipeline runs on every push and pull request.
+GitHub Actions workflow definitions live in `.github/workflows/`. The main entrypoint is `.github/workflows/ci.yml`, and the repository also includes backend and frontend quality gate workflows for future CI expansion.
 
-### Current workflow
-
-The active workflow calls .github/workflows/pre.yml, which:
-
-- formats Go's backend code with gofmt
-- formats frontend files with Prettier
-- commits the formatting changes back to the branch if the code is malformed
-- fails the workflow if formatting changes were needed
-
-In practice, CI is currently focused on code style and formatting rather than full quality checks.
-
-### What is already prepared but not enabled
-
-The repository also contains these workflow files:
-
-- .github/workflows/frontend-quality-gate.yml
-- .github/workflows/frontend-tests.yml
-
-These workflows are ready to add linting, security scans, test execution, and coverage checks, but they are currently commented out in ci.yml and can be edited later.
-
-## How to expand CI with more checks
-
-1. Open .github/workflows/ci.yml.
-2. Uncomment the jobs you want to enable.
-3. Make sure the required tools or scripts exist in the frontend package. For example, the current test workflow expects a test:coverage script, but it is not defined in the frontend package yet.
-
-Example:
-
-```yaml
-jobs:
-  pre-check:
-    uses: ./.github/workflows/pre.yml
-
-  frontend-quality-gates:
-    needs:
-      - pre-check
-    uses: ./.github/workflows/frontend-quality-gate.yml
-
-  tests:
-    needs:
-      - pre-check
-    uses: ./.github/workflows/frontend-tests.yml
-```
-
-### Good next checks to add
+### Suggested next checks
 
 - Backend checks:
-  - go vet ./...
-  - go test ./...
-  - golangci-lint
+  - `go vet ./...`
+  - `go test ./...`
+  - `golangci-lint`
 - Frontend checks:
   - ESLint
   - unit tests
   - coverage thresholds
   - npm audit
-  - Semgrep or Gitleaks
 
-### Practical suggestion
-
-Start by enabling the existing frontend quality gate and test workflows, then add backend checks once the project has a few real Go tests.
-
-If you want stricter enforcement, also enable branch protection rules in GitHub so pull requests cannot be merged until the required checks pass.
+If you want stricter enforcement, enable the relevant workflow jobs in `.github/workflows/ci.yml` and protect the main branch so pull requests cannot be merged until the checks pass.

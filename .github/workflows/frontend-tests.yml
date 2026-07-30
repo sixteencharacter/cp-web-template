@@ -3,7 +3,7 @@ on:
   workflow_call:
 defaults:
   run:
-    working-directory: src/frontend 
+    working-directory: src/frontend
 jobs:
   test:
     name: Test & Coverage

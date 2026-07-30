@@ -3,7 +3,7 @@ on:
   workflow_call:
 defaults:
   run:
-    working-directory: src/frontend 
+    working-directory: src/frontend
 jobs:
   js-lint:
     name: Lint & Format Check
@@ -38,7 +38,7 @@ jobs:
         run: npm ci
 
       - name: Check JSDoc coverage
-        run: npx documentation lint src/**/*.js
+        run: npx -y documentation lint components/sample-card.tsx
   duplicate-code:
     name: Duplicate Code Detection
     runs-on: ubuntu-24.04
@@ -56,7 +56,7 @@ jobs:
         run: npm ci
 
       - name: Run jscpd (copy-paste detector)
-        run: npx jscpd src --threshold 5 --reporters console,badge
+        run: npx jscpd app components --threshold 5 --reporters console,badge
   commit-lint:
     name: Commit Message Lint
     runs-on: ubuntu-24.04

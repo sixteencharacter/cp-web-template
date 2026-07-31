@@ -14,7 +14,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'npm'
           cache-dependency-path: 'src/frontend/package-lock.json'
 
@@ -26,11 +26,27 @@ jobs:
 
       - name: Enforce coverage threshold
         run: |
-          npx nyc check-coverage \
-            --lines 80 \
-            --functions 80 \
-            --branches 70 \
-            --statements 80
+          node - <<'NODE'
+          const fs = require('fs');
+
+          const summary = JSON.parse(fs.readFileSync('coverage/coverage-summary.json', 'utf8')).total;
+          const thresholds = {
+            lines: 80,
+            functions: 80,
+            branches: 70,
+            statements: 80,
+          };
+
+          const failures = Object.entries(thresholds).filter(([metric, threshold]) => summary[metric].pct < threshold);
+
+          if (failures.length > 0) {
+            for (const [metric, threshold] of failures) {
+              console.error(`${metric} coverage ${summary[metric].pct}% is below ${threshold}%`);
+            }
+
+            process.exit(1);
+          }
+          NODE
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 
-	"cp-web-template-backend/internal/router"
+	router "cp-web-template-backend/internal/endpoints"
 	"cp-web-template-backend/internal/service"
 )
 

@@ -1,4 +1,4 @@
-package main
+package healthz
 
 import (
 	"io"
@@ -12,11 +12,23 @@ import (
 	"cp-web-template-backend/internal/service"
 )
 
-func TestNewAppBaseEndpoint(t *testing.T) {
+func TestNewRouter(t *testing.T) {
 	t.Parallel()
 
-	app := newApp(&service.MockService{})
-	request := httptest.NewRequest(http.MethodGet, "/", nil)
+	router := NewRouter(&service.MockService{})
+	require.NotNil(t, router)
+}
+
+func TestRouterHealthz(t *testing.T) {
+	t.Parallel()
+
+	appService := &service.MockService{}
+	appService.On("Healthz").Return("ok")
+
+	app := fiber.New()
+	NewRouter(appService).Register(app)
+
+	request := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 	response, err := app.Test(request, fiber.TestConfig{Timeout: 0, FailOnTimeout: false})
 	require.NoError(t, err)
 
@@ -26,13 +38,5 @@ func TestNewAppBaseEndpoint(t *testing.T) {
 
 	require.Equal(t, http.StatusOK, response.StatusCode)
 	require.Equal(t, "ok", string(body))
-}
-
-func TestBuildAppService(t *testing.T) {
-	t.Parallel()
-
-	appService := buildAppService()
-	require.NotNil(t, appService)
-	require.Equal(t, "ok", appService.Healthz())
-	require.Equal(t, "ok -> foo bar", appService.FooBar())
+	appService.AssertExpectations(t)
 }

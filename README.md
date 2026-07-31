@@ -1,6 +1,6 @@
 # CP Web Application Starter Template
 
-This repository contains a full-stack starter with a Go Fiber backend and a Next.js frontend. The backend is structured around dependency-injected services and router-scoped endpoint packages.
+This repository contains a full-stack starter with a Go Fiber backend and a Next.js frontend. The backend is organized around dependency-injected services and router-scoped endpoint packages, while the frontend uses Next.js App Router.
 
 ## Repository structure
 
@@ -21,13 +21,10 @@ This repository contains a full-stack starter with a Go Fiber backend and a Next
 │   │       │   └── foobar/
 │   │       │       ├── endpoint.go
 │   │       │       └── router.go
-│   │       ├── router/
-│   │       │   ├── router.go
-│   │       │   └── router_test.go
-│   │       └── service/
-│   │           ├── service.go
-│   │           ├── service_mock.go
-│   │           └── service_test.go
+│   │       ├── service/
+│   │       │   ├── service.go
+│   │       │   ├── service_mock.go
+│   │       │   └── service_test.go
 │   └── frontend/
 │       ├── app/
 │       ├── components/
@@ -41,95 +38,104 @@ This repository contains a full-stack starter with a Go Fiber backend and a Next
     └── frontend-tests.yml
 ```
 
-## Backend architecture
-
-- The endpoint handlers live in `src/backend/internal/endpoints/<router-name>/`.
-- Each router folder contains its own `endpoint.go` and `router.go` files.
-- The top-level router package wires those endpoint packages into the Fiber app.
-- The service layer is dependency-injected and composed in `src/backend/internal/service/service.go`.
-
 ## Prerequisites
 
-Before running the project locally, install:
+Install the following before running the project locally:
 
 - Go 1.26.5 or newer
-- Node.js 20 LTS
+- Node.js 20+ (CI currently uses Node 24)
 - npm
 
-## Backend setup
+## Start the backend (Go)
 
-1. Open a terminal and move to the backend folder:
-   ```bash
-   cd src/backend
-   ```
-2. Download Go dependencies:
-   ```bash
-   go mod download
-   ```
-3. Start the backend:
-   ```bash
-   go run .
-   ```
-4. Open http://localhost:3000 to verify the server is responding.
-
-Available backend routes:
-
-- `GET /healthz`
-- `GET /foo/bar`
-
-You can also run the test suite with:
+From the repository root:
 
 ```bash
-go test ./...
-```
-
-## Frontend setup
-
-1. Open a second terminal and move to the frontend folder:
-   ```bash
-   cd src/frontend
-   ```
-2. Install frontend dependencies:
-   ```bash
-   npm ci
-   ```
-3. Start the frontend development server:
-   ```bash
-   npm run dev -- --port 3001
-   ```
-4. Open http://localhost:3001 in your browser.
-
-## Run both apps locally
-
-Use two terminals:
-
-```bash
-# Terminal 1
 cd src/backend
+go mod download
 go run .
 ```
 
+The backend listens on port 3000 and exposes:
+
+- GET /healthz
+- GET /foo/bar
+
+You can verify it by opening http://localhost:3000/healthz.
+
+### Backend tests
+
 ```bash
-# Terminal 2
+cd src/backend
+go test ./...
+```
+
+## Start the frontend (Next.js)
+
+Open a second terminal and run:
+
+```bash
 cd src/frontend
 npm ci
 npm run dev -- --port 3001
 ```
 
+Then open http://localhost:3001 in your browser.
+
+### Frontend tests and checks
+
+```bash
+cd src/frontend
+npm run lint
+npm run test:coverage
+```
+
+## Run everything with Docker Compose
+
+The repository also includes a Docker Compose setup in [docker-compose.yml](docker-compose.yml) for running both services together.
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+This starts:
+
+- Backend on http://localhost:3000
+- Frontend on http://localhost:3001
+
+To stop the services:
+
+```bash
+docker compose down
+```
+
+To remove the volumes as well:
+
+```bash
+docker compose down -v
+```
+
 ## CI overview
 
-GitHub Actions workflow definitions live in `.github/workflows/`. The main entrypoint is `.github/workflows/ci.yml`, and the repository also includes backend and frontend quality gate workflows for future CI expansion.
+GitHub Actions runs the checks from [.github/workflows/ci.yml](.github/workflows/ci.yml) on pushes and pull requests.
 
-### Suggested next checks
+### What runs in CI
 
-- Backend checks:
-  - `go vet ./...`
-  - `go test ./...`
-  - `golangci-lint`
-- Frontend checks:
-  - ESLint
-  - unit tests
-  - coverage thresholds
-  - npm audit
+- Pre-checks: formatting and shared setup from [.github/workflows/pre.yml](.github/workflows/pre.yml)
+- Frontend quality gates: linting, documentation checks, duplicate-code detection, dependency checks, and production-only audit from [.github/workflows/frontend-quality-gate.yml](.github/workflows/frontend-quality-gate.yml)
+- Frontend tests: Jest unit tests with coverage thresholds from [.github/workflows/frontend-tests.yml](.github/workflows/frontend-tests.yml)
+- Backend quality gates: formatting, vet, static analysis, and vulnerability scanning from [.github/workflows/backend-quality-gate.yml](.github/workflows/backend-quality-gate.yml)
+- Backend tests: Go test coverage from [.github/workflows/backend-tests.yml](.github/workflows/backend-tests.yml)
 
-If you want stricter enforcement, enable the relevant workflow jobs in `.github/workflows/ci.yml` and protect the main branch so pull requests cannot be merged until the checks pass.
+### Current thresholds
+
+- Backend coverage threshold: 80%
+- Frontend coverage thresholds:
+  - lines: 80%
+  - functions: 80%
+  - branches: 70%
+  - statements: 80%
+
+If you are contributing, make sure the relevant local checks pass before opening a pull request.

@@ -24,4 +24,9 @@ describe("SampleCard", () => {
       screen.getByRole("button", { name: "Run checks" }),
     ).toBeInTheDocument();
   });
+
+  it("uses default actionLabel when not provided", () => {
+    render(<SampleCard title="T" description="D" />);
+    expect(screen.getByRole("button", { name: "Learn more" })).toBeInTheDocument();
+  });
 });

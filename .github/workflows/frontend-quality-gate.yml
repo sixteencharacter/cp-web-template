@@ -58,7 +58,7 @@ jobs:
       - name: Run jscpd (copy-paste detector)
         run: npx jscpd app components --threshold 5 --reporters console,badge
   commit-lint:
-    name: Commit Message Lint
+    name: MR Title Lint
     runs-on: ubuntu-24.04
     if: github.event_name == 'pull_request'
     steps:

@@ -3,10 +3,13 @@ on:
   workflow_call:
 jobs:
 
-  commit-lint:
+  mr-lint:
     name: MR Title Lint
     runs-on: ubuntu-24.04
     if: github.event_name == 'pull_request'
+    defaults:
+      run:
+        working-directory: src/frontend
     steps:
       - uses: actions/checkout@v4
         with:
@@ -22,7 +25,7 @@ jobs:
 
       - name: Lint PR title
         run: echo "${{ github.event.pull_request.title }}" | npx commitlint --verbose
-        
+
   format-and-fix:
     runs-on: ubuntu-24.04
     permissions:

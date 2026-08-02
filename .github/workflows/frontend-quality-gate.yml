@@ -74,8 +74,8 @@ jobs:
       - name: Install commitlint
         run: npm install --save-dev @commitlint/cli @commitlint/config-conventional
 
-      - name: Lint PR commits
-        run: npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+      - name: Lint PR title
+        run: echo "${{ github.event.pull_request.title }}" | npx commitlint --verbose
   security:
     name: Security Scan
     runs-on: ubuntu-24.04

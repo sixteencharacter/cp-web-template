@@ -6,7 +6,6 @@ jobs:
   mr-lint:
     name: MR Title Lint
     runs-on: ubuntu-24.04
-    if: ${{ github.event_name == 'pull_request' || github.event.pull_request != null }}
     defaults:
       run:
         working-directory: src/frontend
@@ -21,9 +20,11 @@ jobs:
           node-version: '24'
 
       - name: Install commitlint
+        if: ${{ github.event.pull_request != null }}
         run: npm install --save-dev @commitlint/cli @commitlint/config-conventional
 
       - name: Lint PR title
+        if: ${{ github.event.pull_request != null }}
         run: echo "${{ github.event.pull_request.title }}" | npx commitlint --verbose
 
   format-and-fix:

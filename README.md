@@ -140,6 +140,9 @@ GitHub Actions runs the checks from [.github/workflows/ci.yml](.github/workflows
 
 If you are contributing, make sure the relevant local checks pass before opening a pull request.
 
+## For maintainer
+When open MR, the CI will also check the MR whether it's matched with the convention or not. Please refer to this convention when naming the MR (Referenced convention)[https://commitlint.js.org/concepts/commit-conventions.html]
+
 ## Optional pre-commit setup
 
 You can install a Git pre-commit hook locally so common checks run automatically before each commit.

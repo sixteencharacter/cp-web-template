@@ -2,6 +2,31 @@ name: Pre-check
 on:
   workflow_call:
 jobs:
+
+  mr-lint:
+    name: MR Title Lint
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: src/frontend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install commitlint
+        if: ${{ github.event.pull_request != null }}
+        run: npm install --save-dev @commitlint/cli @commitlint/config-conventional
+
+      - name: Lint PR title
+        if: ${{ github.event.pull_request != null }}
+        run: echo "${{ github.event.pull_request.title }}" | npx commitlint --verbose
+
   format-and-fix:
     runs-on: ubuntu-24.04
     permissions:

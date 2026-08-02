@@ -139,3 +139,41 @@ GitHub Actions runs the checks from [.github/workflows/ci.yml](.github/workflows
   - statements: 80%
 
 If you are contributing, make sure the relevant local checks pass before opening a pull request.
+
+## For maintainer
+When open MR, the CI will also check the MR whether it's matched with the convention or not. Please refer to this convention when naming the MR (Referenced convention)[https://commitlint.js.org/concepts/commit-conventions.html]
+
+## Optional pre-commit setup
+
+You can install a Git pre-commit hook locally so common checks run automatically before each commit.
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+What the hook helps with:
+
+- `go-fmt` and `go-vet` for the backend
+- `eslint` and related frontend quality checks
+- basic formatting and whitespace hygiene
+- catching obvious issues before they reach CI
+
+If you want to run the hooks manually at any time, use:
+
+```bash
+pre-commit run --all-files
+```
+
+To clean up later, you can remove the hook installation and undo any generated artifacts:
+
+```bash
+pre-commit uninstall
+rm -rf .git/hooks/pre-commit
+```
+
+If you also want to remove local build and cache output created during development, you can delete the generated directories:
+
+```bash
+rm -rf src/frontend/.next src/frontend/coverage src/backend/coverage
+```

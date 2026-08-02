@@ -27,6 +27,8 @@ describe("SampleCard", () => {
 
   it("uses default actionLabel when not provided", () => {
     render(<SampleCard title="T" description="D" />);
-    expect(screen.getByRole("button", { name: "Learn more" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Learn more" }),
+    ).toBeInTheDocument();
   });
 });

@@ -85,14 +85,8 @@ jobs:
           config: p/javascript
 
       - name: Secret scanning (gitleaks)
-        run: |
-          # Fetch the latest open-source binary directly
-          VERSION=$(curl -s https://github.com | grep -oP '"tag_name": "\K[^"]+')
-          curl -sSLo gitleaks.tar.gz "https://github.com{VERSION}/gitleaks_${VERSION:1}_linux_x64.tar.gz"
-          tar -xzf gitleaks.tar.gz
-          
-          # Execute the scan on your git history
-          ./gitleaks detect --verbose --redact
+        uses: gitleaks/gitleaks-action@v3
+        
   maintainability:
     name: Dead Code & Unused Deps
     runs-on: ubuntu-24.04

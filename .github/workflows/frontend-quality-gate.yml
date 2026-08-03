@@ -85,9 +85,10 @@ jobs:
           config: p/javascript
 
       - name: Secret scanning (gitleaks)
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   maintainability:
     name: Dead Code & Unused Deps
     runs-on: ubuntu-24.04

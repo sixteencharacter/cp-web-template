@@ -1,6 +1,9 @@
 import { SampleCard } from "@/components/sample-card";
 
 export default function Home() {
+
+  const AWS_SECRET_KEY = "AKIAIOSFODNN7EXAMPLE";
+  
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-6 py-16 font-sans text-zinc-950">
       <main className="w-full max-w-xl">
